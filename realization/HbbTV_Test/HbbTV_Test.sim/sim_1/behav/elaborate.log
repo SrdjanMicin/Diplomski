@@ -1,0 +1,20 @@
+Vivado Simulator 2016.2
+Copyright 1986-1999, 2001-2016 Xilinx, Inc. All Rights Reserved.
+Running: C:/Xilinx/Vivado/2016.2/bin/unwrapped/win64.o/xelab.exe -wto 811531c13d77419ba82caf0e966c4130 --debug typical --relax --mt 2 -L xil_defaultlib -L secureip --snapshot FlashTest_tb_behav xil_defaultlib.FlashTest_tb -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling package std.standard
+Compiling package ieee.std_logic_1164
+Compiling package ieee.numeric_std
+Compiling package std.textio
+Compiling architecture behavioral of entity xil_defaultlib.VideoGen [\VideoGen(number_of_pictures=116...]
+Compiling architecture behavioral of entity xil_defaultlib.PixelCounter [pixelcounter_default]
+Compiling architecture behavioral of entity xil_defaultlib.PixelSum [pixelsum_default]
+Compiling architecture behavioral of entity xil_defaultlib.FlashCheck [flashcheck_default]
+Compiling architecture behavioral of entity xil_defaultlib.FlashTest [flashtest_default]
+Compiling architecture behavioral of entity xil_defaultlib.flashtest_tb
+Built simulation snapshot FlashTest_tb_behav
