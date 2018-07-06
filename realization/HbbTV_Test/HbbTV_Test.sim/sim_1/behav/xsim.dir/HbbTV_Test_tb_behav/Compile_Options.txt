@@ -1,0 +1,1 @@
+-wto "811531c13d77419ba82caf0e966c4130" --debug "typical" --relax --mt "2" -L "xil_defaultlib" -L "secureip" --snapshot "HbbTV_Test_tb_behav" "xil_defaultlib.HbbTV_Test_tb" -log "elaborate.log" 

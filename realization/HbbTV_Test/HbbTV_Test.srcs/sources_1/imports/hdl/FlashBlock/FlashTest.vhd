@@ -43,6 +43,7 @@ entity FlashTest is
             inY2_COORDINATE         : in std_logic_vector(31 downto 0);         -- gornja granica prvog i drugog kvadrata po Y-osi
             inBORDER_VALUE          : in std_logic_vector(31 downto 0);         -- srednja vrednost Y komponenti za odredjivanje bljeska 
             
+            outRESULT               : out std_logic;                            -- govori da li ima bljeska
             outREADY                : out std_logic                             -- blok je spreman da primi sledecu sliku
         );
 end FlashTest;
@@ -166,6 +167,8 @@ sEND_OF_FRAME <=    '1' when unsigned(sCOLUMN) = 960 and unsigned(sROW) = 1080 a
 											inEOF           => sEND_OF_FRAME,
 											outRESULT       => sRESULT_2
 										);
+									
+    outRESULT <= sRESULT_1 and sRESULT_2;
 
 end Behavioral;
 

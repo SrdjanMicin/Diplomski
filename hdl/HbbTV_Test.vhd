@@ -46,7 +46,7 @@ entity HbbTV_Test is
 				
 				outVIDEO_READY			: out std_logic;
 				outAUDIO_READY			: out std_logic;
-				outTIME					: out std_logic_vector(31 downto 0)				-- provjeriti kolika duzina vektora je dovoljna
+				outTIME					: out std_logic_vector(15 downto 0)				-- provjeriti kolika duzina vektora je dovoljna
 			);
 end HbbTV_Test;
 
