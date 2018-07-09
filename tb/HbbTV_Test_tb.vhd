@@ -51,6 +51,7 @@ component HbbTV_Test is
 				
 				inSAMPLES				: in  std_logic_vector(31 downto 0);
 				inSAMPLES_VALID			: in  std_logic;
+				inAUDIO_BORDER			: in  std_logic_vector(31 downto 0);
 				
 				outVIDEO_READY			: out std_logic;
 				outAUDIO_READY			: out std_logic;
@@ -93,7 +94,7 @@ end component AudioGen;
 constant picture : string := "D:\Diplomski\jpeg test pattern generator\BMPtoYCbCr\Paint_slike";
 
 signal clk				: std_logic;
-signal reset			: std_logic;
+signal reset			: std_logic := '0';
 signal pixels			: std_logic_vector(31 downto 0);
 signal video_last_line	: std_logic;
 signal video_valid		: std_logic;
@@ -107,7 +108,7 @@ signal x3				: std_logic_vector(31 downto 0);
 signal x4				: std_logic_vector(31 downto 0);
 signal y1				: std_logic_vector(31 downto 0);
 signal y2				: std_logic_vector(31 downto 0);
-signal border			: std_logic_vector(31 downto 0);
+signal video_border		: std_logic_vector(31 downto 0);
 signal pixels_out		: std_logic_vector(31 downto 0);
 
 -- signali za audio signal
@@ -116,6 +117,7 @@ signal audio_ready		: std_logic;
 signal audio_valid		: std_logic;
 signal audio_last		: std_logic;
 signal audio_data		: std_logic_vector(31 downto 0);
+signal audio_border		: std_logic_vector(31 downto 0);
 
 -- signali za timing blok
 signal time_diff		: std_logic_vector(15 downto 0);
@@ -160,15 +162,15 @@ UUT	:HbbTV_Test port map	(
 								inX4_COORDINATE			=> x4,
 								inY1_COORDINATE			=> y1,
 								inY2_COORDINATE			=> y2,
-								inVIDEO_BORDER			=> border,
+								inVIDEO_BORDER			=> video_border,
 								inSAMPLES				=> audio_data,
 								inSAMPLES_VALID			=> audio_valid,
+								inAUDIO_BORDER			=> audio_border,
 								outVIDEO_READY			=> video_ready,
 								outAUDIO_READY			=> audio_ready,
 								outTIME					=> time_diff	
 							);
 							
-	reset <= '0';
 	video_ready <= '1';
 	audio_ready <= '1';
 	x1 <= std_logic_vector(to_unsigned(318,32));
@@ -177,7 +179,7 @@ UUT	:HbbTV_Test port map	(
 	x4 <= std_logic_vector(to_unsigned(1600,32));
 	y1 <= std_logic_vector(to_unsigned(809,32));
 	y2 <= std_logic_vector(to_unsigned(1079,32));
-	border <= std_logic_vector(to_unsigned(5097600,32));
+	video_border <= std_logic_vector(to_unsigned(5097600,32));
 
 clk_process:	process
 				begin
