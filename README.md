@@ -6,4 +6,7 @@ Dodan blok najviseg nivoa koji se naziva HbbTV_Test u kojem su objedinjeni testo
 06.07.2018  
 13:03  
 Napravljen testbench za simulaciju cijelog sistema.  
+09.07.2018  
+16:46  
+Zavrseno sve za detekciju bljeskova i tonova.  
 
