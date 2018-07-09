@@ -43,6 +43,7 @@ entity HbbTV_Test is
 				
 				inSAMPLES				: in  std_logic_vector(31 downto 0);
 				inSAMPLES_VALID			: in  std_logic;
+				inAUDIO_BORDER			: in  std_logic_vector(31 downto 0);
 				
 				outVIDEO_READY			: out std_logic;
 				outAUDIO_READY			: out std_logic;
@@ -78,6 +79,7 @@ component BeepTest is
 				inRST				: in  std_logic;
 				inSAMPLES			: in  std_logic_vector(31 downto 0);
 				inSAMPLES_VALID		: in  std_logic;
+				inSAMPLES_BORDER	: in  std_logic_vector(31 downto 0);
 				outREADY			: out std_logic;
 				outCOMPARE_RESULT	: out std_logic
 			);
@@ -121,12 +123,13 @@ begin
 										);	
 										
 	audio_block:	BeepTest port map	(
-											iCLK 			     => iCLK,
-											inRST                => inRST,
-											inSAMPLES 		     => inSAMPLES,
-											inSAMPLES_VALID	     => inSAMPLES_VALID,
-											outREADY             => outAUDIO_READY,
-											outCOMPARE_RESULT    => sBEEP_RESULT
+											iCLK 				=> iCLK,
+											inRST             	=> inRST,
+											inSAMPLES 		 	=> inSAMPLES,
+											inSAMPLES_VALID	 	=> inSAMPLES_VALID,
+											inSAMPLES_BORDER	=> inAUDIO_BORDER,
+											outREADY           	=> outAUDIO_READY,
+											outCOMPARE_RESULT  	=> sBEEP_RESULT
 										);
 										
 	timing_block:	TimeDiff port map	(

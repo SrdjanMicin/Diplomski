@@ -33,6 +33,7 @@ entity BeepTest is
             inRST               : in  std_logic;
             inSAMPLES           : in  std_logic_vector(31 downto 0);
             inSAMPLES_VALID     : in  std_logic;
+			inSAMPLES_BORDER	: in  std_logic_vector(31 downto 0);
 			outREADY			: out std_logic;
             outCOMPARE_RESULT   : out std_logic 
         );
@@ -51,13 +52,18 @@ architecture Behavioral of BeepTest is
                 );
     end component AverageSum;
 
-signal sAVERAGE_SUM_LEFT_CHANNEL : std_logic_vector(31 downto 0);
-signal sAVERAGE_SUM_RIGHT_CHANNEL : std_logic_vector(31 downto 0);
+signal sAVERAGE_SUM_LEFT_CHANNEL 	: std_logic_vector(31 downto 0);
+signal sAVERAGE_SUM_RIGHT_CHANNEL 	: std_logic_vector(31 downto 0);
+signal tmp_average_sum_left 		: signed(31 downto 0);
+signal tmp_average_sum_right 		: signed(31 downto 0); 
+signal sBORDER 						: signed(31 downto 0) := (others => '0');
+signal sCOMPARE_LEFT				: std_logic;
+signal sCOMPARE_RIGHT				: std_logic;
 
 begin
 
 	outREADY <= '1';
-
+	
     SAMPLE_SUM_BLOCK:   AverageSum port map	(
 												iCLK                            => iCLK,
 												inRST                           => inRST,
@@ -66,7 +72,19 @@ begin
 												outAVERAGE_SUM_LEFT_CHANNEL     => sAVERAGE_SUM_LEFT_CHANNEL,
 												outAVERAGE_SUM_RIGHT_CHANNEL    => sAVERAGE_SUM_RIGHT_CHANNEL
 											);
-
+											
+	sBORDER <= signed(inSAMPLES_BORDER);
+											
+	tmp_average_sum_left 	<= signed(sAVERAGE_SUM_LEFT_CHANNEL);
+	tmp_average_sum_right	<= signed(sAVERAGE_SUM_RIGHT_CHANNEL);
+	
+	sCOMPARE_LEFT <=	'0' when sBORDER > tmp_average_sum_left else
+						'1';
+	sCOMPARE_RIGHT <=	'0' when sBORDER > tmp_average_sum_right else
+						'1';
+						
+	outCOMPARE_RESULT <= sCOMPARE_LEFT or sCOMPARE_RIGHT;
+	
 end Behavioral;
 
 -------------------------------------------------------------------------------------------------------------
