@@ -9,4 +9,6 @@ Napravljen testbench za simulaciju cijelog sistema.
 09.07.2018  
 16:46  
 Zavrseno sve za detekciju bljeskova i tonova.  
-
+11.07.2018  
+15:06  
+Zavrsen blok za mjerenje pojavljivanja vremenske razlike izmedju bljeska i tona.  
