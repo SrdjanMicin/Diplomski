@@ -87,20 +87,19 @@ end component BeepTest;
 			
 component TimeDiff is
 	Port	(
-				iCLK 	: in  std_logic;
-				inRST	: in  std_logic;
-				inFLASH	: in  std_logic;
-				inBEEP	: in  std_logic;
+				iCLK 			: in  std_logic;
+				inRST			: in  std_logic;
+				inFLASH			: in  std_logic;
+				inBEEP			: in  std_logic;
 				
-				outTIME : out std_logic_vector(15 downto 0)
+				outTIME_DIFF	: out std_logic_vector(15 downto 0)
 			);
 end component TimeDiff;
 			
-signal sFLASH_RESULT	: std_logic;
-signal sBEEP_RESULT		: std_logic;
+signal sFLASH_RESULT	: std_logic := '0';
+signal sBEEP_RESULT		: std_logic := '0';
 
--- ovaj signal je samo privremen dok ne vidimo sta cemo sa izlazom TimeDiff bloka.
-signal tmpTIME : std_logic_vector(15 downto 0);
+signal sTIME_RESULT		: std_logic_vector(15 downto 0) := (others =>'0');
 
 begin
 	
@@ -137,7 +136,7 @@ begin
 											inRST 	=> inRST,
 											inFLASH	=> sFLASH_RESULT,
 											inBEEP 	=> sBEEP_RESULT,
-											outTIME => tmpTIME
+											outTIME_DIFF => outTIME
 										);
 end Behavioral;
 -------------------------------------------------------------------------------------------------------------
