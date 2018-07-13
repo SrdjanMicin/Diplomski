@@ -57,9 +57,10 @@ begin
 
     sPIXELS <= inPIXELS;
 
--- oznacava da je blok uvijek spreman da primi sledeci frame. Trebace uslov koji ovu vrijednost postavlja na '1' tek kada se zavrsi obrada 
--- tekuceg frame-a da ne bi dosli u situaciju da dok obradjujemo jedan frame, drugi krene da dolazi.
-    outREADY <= '1';
+--Blok je spreman za primanje piksela sve dok ne dodje do rezolucije ekrana 1920x1080(predstavljeno matricom), 
+--kada popunimo cijeli ekran pikselima blok nije spreman za sledeci frame dok se ne zavrsi obrada tekuceg.
+    outREADY <= '1' when unsigned(sCOLUMN) < 960 and unsigned(sROW) < 1080 else
+				'0';
 
 -- uslov za prelaz u novu kolonu, zavisi od signala sa AXI4Stream magistrale.    
     sNEW_COLUMN <= "11" when inLAST_LINE = '1' and inVALID_PIXELS = '1' else
@@ -103,8 +104,6 @@ begin
                                 end if;
                             end if;
                         end process;
-
---outROW <= std_logic_vector(to_unsigned(1,32)) when sROW <= std_logic_vector(to_unsigned(1081,32));
 
 outCOLUMN <= sCOLUMN;
 outROW    <= sROW;

@@ -99,6 +99,9 @@ end component TimeDiff;
 signal sFLASH_RESULT	: std_logic := '0';
 signal sBEEP_RESULT		: std_logic := '0';
 
+signal sVIDEO_READY		: std_logic;
+signal sAUDIO_READY		: std_logic;
+
 signal sTIME_RESULT		: std_logic_vector(15 downto 0) := (others =>'0');
 
 begin
@@ -118,7 +121,7 @@ begin
 											inY2_COORDINATE			=> inY2_COORDINATE,
 											inBORDER_VALUE 			=> inVIDEO_BORDER,
 											outRESULT 				=> sFLASH_RESULT,
-											outREADY 				=> outVIDEO_READY
+											outREADY 				=> sVIDEO_READY
 										);	
 										
 	audio_block:	BeepTest port map	(
@@ -127,7 +130,7 @@ begin
 											inSAMPLES 		 	=> inSAMPLES,
 											inSAMPLES_VALID	 	=> inSAMPLES_VALID,
 											inSAMPLES_BORDER	=> inAUDIO_BORDER,
-											outREADY           	=> outAUDIO_READY,
+											outREADY           	=> sAUDIO_READY,
 											outCOMPARE_RESULT  	=> sBEEP_RESULT
 										);
 										
@@ -138,6 +141,10 @@ begin
 											inBEEP 	=> sBEEP_RESULT,
 											outTIME_DIFF => outTIME
 										);
+	outVIDEO_READY	<= sVIDEO_READY;
+
+	outAUDIO_READY	<=	'1' when sVIDEO_READY = '1' and sAUDIO_READY = '1' else
+						'0';
 end Behavioral;
 -------------------------------------------------------------------------------------------------------------
 --                                         Revision History
