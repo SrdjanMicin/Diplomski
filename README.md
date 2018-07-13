@@ -11,4 +11,7 @@ Napravljen testbench za simulaciju cijelog sistema.
 Zavrseno sve za detekciju bljeskova i tonova.  
 11.07.2018  
 15:06  
-Zavrsen blok za mjerenje pojavljivanja vremenske razlike izmedju bljeska i tona.  
+Zavrsen blok za mjerenje pojavljivanja vremenske razlike izmedju bljeska i tona.    
+13.07.2018  
+15:33  
+Wrapper za axi stream gotovi, ostao jos axi lite da se poveze.  
