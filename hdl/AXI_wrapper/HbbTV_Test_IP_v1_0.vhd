@@ -228,14 +228,21 @@ HbbTV_Test_inst:	HbbTV_Test port map	(
 	audio_data	<= s_audio_axis_tdata;
 	audio_valid	<= s_audio_axis_tvalid;
 	audio_ready <= HbbTV_audio_ready and m_audio_axis_tready;
-	m_audio_axis_tstrb	<= s_audio_axis_tstrb;
+
 	m_audio_axis_tlast	<= s_audio_axis_tlast;
+	m_audio_axis_tdata	<= audio_data;
+	m_audio_axis_tvalid	<= audio_valid;
+	s_audio_axis_tready	<= audio_ready;
 	
 	video_data	<= s_video_axis_tdata;
 	video_valid	<= s_video_axis_tvalid;
 	video_ready	<= HbbTV_video_ready and m_video_axis_tready;
 	video_last	<= s_video_axis_tlast;
-	m_video_axis_tstrb	<= s_video_axis_tstrb;
+	
+	m_video_axis_tvalid	<= video_valid;
+	m_video_axis_tdata	<= video_data;
+	m_video_axis_tlast	<= video_last;
+	m_video_axis_tready	<= video_ready;
 	-- User logic ends
 
 end arch_imp;
