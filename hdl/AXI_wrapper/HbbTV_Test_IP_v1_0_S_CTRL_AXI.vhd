@@ -16,7 +16,15 @@ entity HbbTV_Test_IP_v1_0_S_CTRL_AXI is
 	);
 	port (
 		-- Users to add ports here
-
+		outX1_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX2_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX3_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX4_COORDINATE	: out std_logic_vector(31 downto 0);
+		outY1_COORDINATE	: out std_logic_vector(31 downto 0);
+		outY2_COORDINATE	: out std_logic_vector(31 downto 0);
+		outVIDEO_BORDER		: out std_logic_vector(31 downto 0);
+		outAUDIO_BORDER		: out std_logic_vector(31 downto 0);
+		inTIME				: in  std_logic_vector(15 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -153,6 +161,7 @@ component HbbTV_Test is
 				outAUDIO_READY			: out std_logic;
 				outTIME					: out std_logic_vector(15 downto 0)	
 			);
+end component HbbTV_Test;
 	
 begin
 	-- I/O Connections assignments
@@ -522,7 +531,7 @@ begin
 	      when b"1000" =>
 	        reg_data_out <= slv_reg8;
 	      when b"1001" =>
-	        reg_data_out <= slv_reg9;
+	        reg_data_out <= inTIME;
 	      when b"1010" =>
 	        reg_data_out <= slv_reg10;
 	      when b"1011" =>
@@ -560,25 +569,14 @@ begin
 
 
 	-- Add user logic here
-	hbbtv:	HbbTv_Test port map	(
-									iCLK					=> S_AXI_ACLK,
-									inRST					=> S_AXI_ARESETN,
-									inPIXELS				=> slv_reg0,
-									inLAST_LINE				=>
-									inSTART_TRANSMISSION	=>
-									inX1_COORDINATE			=> slv_reg1,
-									inX2_COORDINATE			=> slv_reg2,
-									inX3_COORDINATE			=> slv_reg3,
-									inX4_COORDINATE			=> slv_reg4,
-									inY1_COORDINATE			=> slv_reg5,
-									inY2_COORDINATE			=> slv_reg6,
-									inVIDEO_BORDER			=> slv_reg7,
-									inSAMPLES				=> slv_reg8,
-									inAUDIO_BORDER			=> slv_reg9,
-									outVIDEO_READY			=> 
-									outAUDIO_READY			=>
-									outTIME					=> slv_reg10
-								);
+	outX1_COORDINATE <= slv_reg1;
+	outX2_COORDINATE <= slv_reg2;
+	outX3_COORDINATE <= slv_reg3;
+	outX4_COORDINATE <= slv_reg4;
+	outY1_COORDINATE <= slv_reg5;
+	outY2_COORDINATE <= slv_reg6;
+	outVIDEO_BORDER <= slv_reg7;
+	outAUDIO_BORDER <= slv_reg8;
 	-- User logic ends
 
 end arch_imp;

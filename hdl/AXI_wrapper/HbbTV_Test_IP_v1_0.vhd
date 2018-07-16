@@ -30,7 +30,15 @@ entity HbbTV_Test_IP_v1_0 is
 	);
 	port (
 		-- Users to add ports here
-
+		outX1_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX2_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX3_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX4_COORDINATE	: out std_logic_vector(31 downto 0);
+		outY1_COORDINATE	: out std_logic_vector(31 downto 0);
+		outY2_COORDINATE	: out std_logic_vector(31 downto 0);
+		outVIDEO_BORDER		: out std_logic_vector(31 downto 0);
+		outAUDIO_BORDER		: out std_logic_vector(31 downto 0);
+		inTIME				: in  std_logic_vector(15 downto 0);
 		-- User ports ends
 		-- Do not modify the ports beyond this line
 
@@ -104,12 +112,20 @@ architecture arch_imp of HbbTV_Test_IP_v1_0 is
 		signal audio_data	: std_logic_vector(31 downto 0);
 		signal audio_valid	: std_logic;
 		signal audio_ready	: std_logic;
+		signal audio_border	: std_logic_vector(31 downto 0);
 		
 		signal video_data	: std_logic_vector(31 downto 0);
 		signal video_valid	: std_logic;
 		signal video_ready	: std_logic;
 		signal video_last	: std_logic;
 		signal video_start	: std_logic;
+		signal video_x1		: std_logic_vector(31 downto 0);
+		signal video_x2		: std_logic_vector(31 downto 0);
+		signal video_x3		: std_logic_vector(31 downto 0);
+		signal video_x4		: std_logic_vector(31 downto 0);
+		signal video_y1		: std_logic_vector(31 downto 0);
+		signal video_y2		: std_logic_vector(31 downto 0);
+		signal video_border	: std_logic_vector(31 downto 0);
 		
 		signal synch_time	: std_logic_vector(15 downto 0);
 	
@@ -145,6 +161,17 @@ architecture arch_imp of HbbTV_Test_IP_v1_0 is
 		C_S_AXI_ADDR_WIDTH	: integer	:= 6
 		);
 		port (
+		
+		outX1_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX2_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX3_COORDINATE	: out std_logic_vector(31 downto 0);
+		outX4_COORDINATE	: out std_logic_vector(31 downto 0);
+		outY1_COORDINATE	: out std_logic_vector(31 downto 0);
+		outY2_COORDINATE	: out std_logic_vector(31 downto 0);
+		outVIDEO_BORDER		: out std_logic_vector(31 downto 0);
+		outAUDIO_BORDER		: out std_logic_vector(31 downto 0);
+		inTIME				: in  std_logic_vector(15 downto 0);
+		
 		S_AXI_ACLK	: in std_logic;
 		S_AXI_ARESETN	: in std_logic;
 		S_AXI_AWADDR	: in std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -178,6 +205,17 @@ HbbTV_Test_IP_v1_0_S_CTRL_AXI_inst : HbbTV_Test_IP_v1_0_S_CTRL_AXI
 		C_S_AXI_ADDR_WIDTH	=> C_S_CTRL_AXI_ADDR_WIDTH
 	)
 	port map (
+		
+		outX1_COORDINATE	=> video_x1,
+		outX2_COORDINATE	=> video_x2,
+		outX3_COORDINATE	=> video_x3,
+		outX4_COORDINATE	=> video_x4,
+		outY1_COORDINATE	=> video_y1,
+		outY2_COORDINATE	=> video_y2,
+		outVIDEO_BORDER		=> video_border,
+		outAUDIO_BORDER		=> audio_border,
+		inTIME				=> synch_time,
+	
 		S_AXI_ACLK	=> s_ctrl_axi_aclk,
 		S_AXI_ARESETN	=> s_ctrl_axi_aresetn,
 		S_AXI_AWADDR	=> s_ctrl_axi_awaddr,
@@ -209,17 +247,17 @@ HbbTV_Test_inst:	HbbTV_Test port map	(
 											inLAST_LINE				=> video_last,
 											inVALID_PIXELS			=> video_valid,
 											inSTART_TRANSMISSION	=> video_start,
-											inX1_COORDINATE			=>
-											inX2_COORDINATE			=>
-											inX3_COORDINATE			=>
-											inX4_COORDINATE			=>
-											inY1_COORDINATE			=>
-											inY2_COORDINATE			=>
-											inVIDEO_BORDER			=>
+											inX1_COORDINATE			=> video_x1,
+											inX2_COORDINATE			=> video_x2,
+											inX3_COORDINATE			=> video_x3,
+											inX4_COORDINATE			=> video_x4,
+											inY1_COORDINATE			=> video_y1,
+											inY2_COORDINATE			=> video_y2,
+											inVIDEO_BORDER			=> video_border,
 											
 											inSAMPLES				=> audio_data,
 											inSAMPLES_VALID			=> audio_valid,
-											inAUDIO_BORDER			=> 
+											inAUDIO_BORDER			=> audio_border,
 											
 											outVIDEO_READY			=> HbbTV_audio_ready,
 											outAUDIO_READY			=> HbbTV_video_ready,
@@ -228,21 +266,14 @@ HbbTV_Test_inst:	HbbTV_Test port map	(
 	audio_data	<= s_audio_axis_tdata;
 	audio_valid	<= s_audio_axis_tvalid;
 	audio_ready <= HbbTV_audio_ready and m_audio_axis_tready;
-
+	m_audio_axis_tstrb	<= s_audio_axis_tstrb;
 	m_audio_axis_tlast	<= s_audio_axis_tlast;
-	m_audio_axis_tdata	<= audio_data;
-	m_audio_axis_tvalid	<= audio_valid;
-	s_audio_axis_tready	<= audio_ready;
 	
 	video_data	<= s_video_axis_tdata;
 	video_valid	<= s_video_axis_tvalid;
 	video_ready	<= HbbTV_video_ready and m_video_axis_tready;
 	video_last	<= s_video_axis_tlast;
-	
-	m_video_axis_tvalid	<= video_valid;
-	m_video_axis_tdata	<= video_data;
-	m_video_axis_tlast	<= video_last;
-	m_video_axis_tready	<= video_ready;
+	m_video_axis_tstrb	<= s_video_axis_tstrb;
 	-- User logic ends
 
 end arch_imp;
