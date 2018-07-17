@@ -1,17 +1,1 @@
-05.07.2018   
-12:36  
-Osnovna radna verzija sa detektorima bljeska i zvucnog signala  
-16:10  
-Dodan blok najviseg nivoa koji se naziva HbbTV_Test u kojem su objedinjeni testovi za bljesak i zvucni signal kao provjera vremenskih razmaka izmedju njih. Takodje, napravljen kostur za TimeDiff blok cija je svrha da mjeri razliku u [ms] izmedju pojavljivanja bljeskova i zvucnih signala.  
-06.07.2018  
-13:03  
-Napravljen testbench za simulaciju cijelog sistema.  
-09.07.2018  
-16:46  
-Zavrseno sve za detekciju bljeskova i tonova.  
-11.07.2018  
-15:06  
-Zavrsen blok za mjerenje pojavljivanja vremenske razlike izmedju bljeska i tona.    
-13.07.2018  
-15:33  
-Wrapper za axi stream gotovi, ostao jos axi lite da se poveze.  
+ 
