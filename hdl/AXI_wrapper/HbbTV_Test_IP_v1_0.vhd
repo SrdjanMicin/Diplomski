@@ -4,79 +4,53 @@ use ieee.numeric_std.all;
 
 entity HbbTV_Test_IP_v1_0 is
 	generic (
-		-- Users to add parameters here
-
-		-- User parameters ends
-		-- Do not modify the parameters beyond this line
-
 
 		-- Parameters of Axi Slave Bus Interface S_AUDIO_AXIS
 		C_S_AUDIO_AXIS_TDATA_WIDTH	: integer	:= 32;
 
 		-- Parameters of Axi Master Bus Interface M_AUDIO_AXIS
 		C_M_AUDIO_AXIS_TDATA_WIDTH	: integer	:= 32;
-		C_M_AUDIO_AXIS_START_COUNT	: integer	:= 32;
 
 		-- Parameters of Axi Slave Bus Interface S_VIDEO_AXIS
 		C_S_VIDEO_AXIS_TDATA_WIDTH	: integer	:= 32;
 
 		-- Parameters of Axi Master Bus Interface M_VIDEO_AXIS
 		C_M_VIDEO_AXIS_TDATA_WIDTH	: integer	:= 32;
-		C_M_VIDEO_AXIS_START_COUNT	: integer	:= 32;
 
 		-- Parameters of Axi Slave Bus Interface S_CTRL_AXI
 		C_S_CTRL_AXI_DATA_WIDTH	: integer	:= 32;
 		C_S_CTRL_AXI_ADDR_WIDTH	: integer	:= 6
 	);
 	port (
-		-- Users to add ports here
-		outX1_COORDINATE	: out std_logic_vector(31 downto 0);
-		outX2_COORDINATE	: out std_logic_vector(31 downto 0);
-		outX3_COORDINATE	: out std_logic_vector(31 downto 0);
-		outX4_COORDINATE	: out std_logic_vector(31 downto 0);
-		outY1_COORDINATE	: out std_logic_vector(31 downto 0);
-		outY2_COORDINATE	: out std_logic_vector(31 downto 0);
-		outVIDEO_BORDER		: out std_logic_vector(31 downto 0);
-		outAUDIO_BORDER		: out std_logic_vector(31 downto 0);
-		inTIME				: in  std_logic_vector(15 downto 0);
-		-- User ports ends
-		-- Do not modify the ports beyond this line
-
-
+		
 		-- Ports of Axi Slave Bus Interface S_AUDIO_AXIS
-		s_audio_axis_aclk	: in std_logic;
-		s_audio_axis_aresetn	: in std_logic;
+		audio_aclk			: in std_logic;
+		audio_aresetn		: in std_logic;
 		s_audio_axis_tready	: out std_logic;
 		s_audio_axis_tdata	: in std_logic_vector(C_S_AUDIO_AXIS_TDATA_WIDTH-1 downto 0);
-		s_audio_axis_tstrb	: in std_logic_vector((C_S_AUDIO_AXIS_TDATA_WIDTH/8)-1 downto 0);
 		s_audio_axis_tlast	: in std_logic;
 		s_audio_axis_tvalid	: in std_logic;
 
 		-- Ports of Axi Master Bus Interface M_AUDIO_AXIS
-		m_audio_axis_aclk	: in std_logic;
-		m_audio_axis_aresetn	: in std_logic;
 		m_audio_axis_tvalid	: out std_logic;
 		m_audio_axis_tdata	: out std_logic_vector(C_M_AUDIO_AXIS_TDATA_WIDTH-1 downto 0);
-		m_audio_axis_tstrb	: out std_logic_vector((C_M_AUDIO_AXIS_TDATA_WIDTH/8)-1 downto 0);
 		m_audio_axis_tlast	: out std_logic;
 		m_audio_axis_tready	: in std_logic;
 
 		-- Ports of Axi Slave Bus Interface S_VIDEO_AXIS
-		s_video_axis_aclk	: in std_logic;
-		s_video_axis_aresetn	: in std_logic;
+		video_aclk			: in std_logic;
+		video_aresetn		: in std_logic;
 		s_video_axis_tready	: out std_logic;
 		s_video_axis_tdata	: in std_logic_vector(C_S_VIDEO_AXIS_TDATA_WIDTH-1 downto 0);
-		s_video_axis_tstrb	: in std_logic_vector((C_S_VIDEO_AXIS_TDATA_WIDTH/8)-1 downto 0);
 		s_video_axis_tlast	: in std_logic;
 		s_video_axis_tvalid	: in std_logic;
+		s_video_axis_tuser	: in std_logic;
 
 		-- Ports of Axi Master Bus Interface M_VIDEO_AXIS
-		m_video_axis_aclk	: in std_logic;
-		m_video_axis_aresetn	: in std_logic;
 		m_video_axis_tvalid	: out std_logic;
 		m_video_axis_tdata	: out std_logic_vector(C_M_VIDEO_AXIS_TDATA_WIDTH-1 downto 0);
-		m_video_axis_tstrb	: out std_logic_vector((C_M_VIDEO_AXIS_TDATA_WIDTH/8)-1 downto 0);
 		m_video_axis_tlast	: out std_logic;
+		m_video_axis_tuser	: out std_logic;
 		m_video_axis_tready	: in std_logic;
 
 		-- Ports of Axi Slave Bus Interface S_CTRL_AXI
@@ -111,14 +85,13 @@ architecture arch_imp of HbbTV_Test_IP_v1_0 is
 
 		signal audio_data	: std_logic_vector(31 downto 0);
 		signal audio_valid	: std_logic;
-		signal audio_ready	: std_logic;
 		signal audio_border	: std_logic_vector(31 downto 0);
+		signal audio_ready	: std_logic;
 		
 		signal video_data	: std_logic_vector(31 downto 0);
 		signal video_valid	: std_logic;
-		signal video_ready	: std_logic;
 		signal video_last	: std_logic;
-		signal video_start	: std_logic;
+		signal video_sof	: std_logic;
 		signal video_x1		: std_logic_vector(31 downto 0);
 		signal video_x2		: std_logic_vector(31 downto 0);
 		signal video_x3		: std_logic_vector(31 downto 0);
@@ -126,6 +99,7 @@ architecture arch_imp of HbbTV_Test_IP_v1_0 is
 		signal video_y1		: std_logic_vector(31 downto 0);
 		signal video_y2		: std_logic_vector(31 downto 0);
 		signal video_border	: std_logic_vector(31 downto 0);
+		signal video_ready	: std_logic;
 		
 		signal synch_time	: std_logic_vector(15 downto 0);
 	
@@ -239,14 +213,13 @@ HbbTV_Test_IP_v1_0_S_CTRL_AXI_inst : HbbTV_Test_IP_v1_0_S_CTRL_AXI
 		S_AXI_RREADY	=> s_ctrl_axi_rready
 	);
 
-	-- Add user logic here
 HbbTV_Test_inst:	HbbTV_Test port map	(
-											iCLK					=> s_video_axis_aclk,
-											inRST					=> s_video_axis_aresetn,
+											iCLK					=> video_aclk,
+											inRST					=> video_aresetn,
 											inPIXELS				=> video_data,
 											inLAST_LINE				=> video_last,
 											inVALID_PIXELS			=> video_valid,
-											inSTART_TRANSMISSION	=> video_start,
+											inSTART_TRANSMISSION	=> video_sof,
 											inX1_COORDINATE			=> video_x1,
 											inX2_COORDINATE			=> video_x2,
 											inX3_COORDINATE			=> video_x3,
@@ -259,21 +232,29 @@ HbbTV_Test_inst:	HbbTV_Test port map	(
 											inSAMPLES_VALID			=> audio_valid,
 											inAUDIO_BORDER			=> audio_border,
 											
-											outVIDEO_READY			=> HbbTV_audio_ready,
-											outAUDIO_READY			=> HbbTV_video_ready,
+											outVIDEO_READY			=> video_ready,
+											outAUDIO_READY			=> audio_ready,
 											outTIME					=> synch_time
 										);
 	audio_data	<= s_audio_axis_tdata;
-	audio_valid	<= s_audio_axis_tvalid;
-	audio_ready <= HbbTV_audio_ready and m_audio_axis_tready;
-	m_audio_axis_tstrb	<= s_audio_axis_tstrb;
+	audio_valid	<= s_audio_axis_tvalid and m_audio_axis_tready;
+
+	s_audio_axis_tready <= m_audio_axis_tready;
+
+	m_audio_axis_tvalid <= s_audio_axis_tvalid;	
+	m_audio_axis_tdata	<= audio_data;
 	m_audio_axis_tlast	<= s_audio_axis_tlast;
 	
 	video_data	<= s_video_axis_tdata;
-	video_valid	<= s_video_axis_tvalid;
-	video_ready	<= HbbTV_video_ready and m_video_axis_tready;
+	video_valid	<= s_video_axis_tvalid and m_video_axis_tready;
 	video_last	<= s_video_axis_tlast;
-	m_video_axis_tstrb	<= s_video_axis_tstrb;
-	-- User logic ends
+	video_sof	<= s_video_axis_tuser;
+	
+	s_video_axis_tready <= m_video_axis_tready;
+	
+	m_video_axis_tvalid	<= s_video_axis_tvalid;
+	m_video_axis_tdata	<= video_data;
+	m_video_axis_tlast	<= video_last;
+	m_video_axis_tuser	<= video_sof;
 
 end arch_imp;
