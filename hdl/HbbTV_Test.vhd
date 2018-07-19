@@ -33,6 +33,8 @@ entity HbbTV_Test is
 				inLAST_LINE				: in  std_logic;
 				inVALID_PIXELS			: in  std_logic;
 				inSTART_TRANSMISSION	: in  std_logic;
+				inWIDTH                 : in  std_logic_vector(31 downto 0);
+				inHEIGHT                : in  std_logic_vector(31 downto 0);
 				inX1_COORDINATE			: in  std_logic_vector(31 downto 0);
 				inX2_COORDINATE			: in  std_logic_vector(31 downto 0);
 				inX3_COORDINATE			: in  std_logic_vector(31 downto 0);
@@ -61,6 +63,8 @@ component FlashTest is
 				inLAST_LINE				: in  std_logic;
 				inVALID_PIXELS			: in  std_logic;
 				inSTART_TRANSMISSION	: in  std_logic;
+				inWIDTH                 : in  std_logic_vector(31 downto 0);
+				inHEIGHT                : in  std_logic_vector(31 downto 0);
 				inX1_COORDINATE			: in  std_logic_vector(31 downto 0);
 				inX2_COORDINATE			: in  std_logic_vector(31 downto 0);
 				inX3_COORDINATE			: in  std_logic_vector(31 downto 0);
@@ -99,9 +103,6 @@ end component TimeDiff;
 signal sFLASH_RESULT	: std_logic := '0';
 signal sBEEP_RESULT		: std_logic := '0';
 
-signal sVIDEO_READY		: std_logic;
-signal sAUDIO_READY		: std_logic;
-
 signal sTIME_RESULT		: std_logic_vector(15 downto 0) := (others =>'0');
 
 begin
@@ -113,6 +114,8 @@ begin
 											inLAST_LINE 			=> inLAST_LINE,
 											inVALID_PIXELS 			=> inVALID_PIXELS,
 											inSTART_TRANSMISSION	=> inSTART_TRANSMISSION,
+											inWIDTH                 => inWIDTH,
+											inHEIGHT                => inHEIGHT,
 											inX1_COORDINATE 		=> inX1_COORDINATE,
 											inX2_COORDINATE 		=> inX2_COORDINATE,
 											inX3_COORDINATE 		=> inX3_COORDINATE,
@@ -121,7 +124,7 @@ begin
 											inY2_COORDINATE			=> inY2_COORDINATE,
 											inBORDER_VALUE 			=> inVIDEO_BORDER,
 											outRESULT 				=> sFLASH_RESULT,
-											outREADY 				=> sVIDEO_READY
+											outREADY 				=> outVIDEO_READY
 										);	
 										
 	audio_block:	BeepTest port map	(
@@ -130,7 +133,7 @@ begin
 											inSAMPLES 		 	=> inSAMPLES,
 											inSAMPLES_VALID	 	=> inSAMPLES_VALID,
 											inSAMPLES_BORDER	=> inAUDIO_BORDER,
-											outREADY           	=> sAUDIO_READY,
+											outREADY           	=> outAUDIO_READY,
 											outCOMPARE_RESULT  	=> sBEEP_RESULT
 										);
 										
@@ -141,10 +144,6 @@ begin
 											inBEEP 	=> sBEEP_RESULT,
 											outTIME_DIFF => outTIME
 										);
-	outVIDEO_READY	<= sVIDEO_READY;
-
-	outAUDIO_READY	<=	'1' when sVIDEO_READY = '1' and sAUDIO_READY = '1' else
-						'0';
 end Behavioral;
 -------------------------------------------------------------------------------------------------------------
 --                                         Revision History

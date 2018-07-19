@@ -255,14 +255,14 @@ begin
 	  if rising_edge(S_AXI_ACLK) then 
 	    if S_AXI_ARESETN = '0' then
 	      slv_reg0 <= (others => '0');
-	      slv_reg1 <= (others => '0');
-	      slv_reg2 <= (others => '0');
-	      slv_reg3 <= (others => '0');
-	      slv_reg4 <= (others => '0');
-	      slv_reg5 <= (others => '0');
-	      slv_reg6 <= (others => '0');
-	      slv_reg7 <= (others => '0');
-	      slv_reg8 <= (others => '0');
+	      slv_reg1 <= std_logic_vector(to_unsigned(211,32));
+	      slv_reg2 <= std_logic_vector(to_unsigned(427,32));
+	      slv_reg3 <= std_logic_vector(to_unsigned(852,32));
+	      slv_reg4 <= std_logic_vector(to_unsigned(1067,32));
+	      slv_reg5 <= std_logic_vector(to_unsigned(539,32));
+	      slv_reg6 <= std_logic_vector(to_unsigned(719,32));
+	      slv_reg7 <= std_logic_vector(to_unsigned(5097600,32));
+	      slv_reg8 <= std_logic_vector(to_unsigned(8586,32));
 	      slv_reg9 <= (others => '0');
 	      slv_reg10 <= (others => '0');
 	      slv_reg11 <= (others => '0');
@@ -531,7 +531,7 @@ begin
 	      when b"1000" =>
 	        reg_data_out <= slv_reg8;
 	      when b"1001" =>
-	        reg_data_out <= inTIME;
+	        reg_data_out <= "h0000" & inTIME;
 	      when b"1010" =>
 	        reg_data_out <= slv_reg10;
 	      when b"1011" =>

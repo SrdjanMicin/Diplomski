@@ -37,7 +37,7 @@ entity AverageSum is
         );
 end AverageSum;
 
-architecture Behavioral of SAS_AV is
+architecture Behavioral of AverageSum is
 
 signal tmp_right : signed(31 downto 0) := (others => '0');
 signal tmp_left : signed(31 downto 0) := (others => '0');

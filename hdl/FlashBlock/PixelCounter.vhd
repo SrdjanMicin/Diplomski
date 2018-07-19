@@ -38,6 +38,7 @@ entity PixelCounter is
             inLAST_LINE             : in  std_logic;                                -- kraj jednog reda(linije)
             inVALID_PIXELS          : in  std_logic;                                -- validni pikseli
             inSTART_TRANSMISSION    : in  std_logic;                                -- pocetak novog frame-a
+            inHEIGHT                : in  std_logic_vector(31 downto 0);
             outREADY                : out std_logic;                                -- oznacava da je blok spreman da primi sledeci frame
             outCOLUMN               : out std_logic_vector(31 downto 0);            -- kolona piksela
             outROW                  : out std_logic_vector(31 downto 0);            -- red piksela
@@ -53,14 +54,17 @@ signal sNEW_COLUMN      : std_logic_vector(1 downto 0);
 signal sNEW_ROW         : std_logic_vector(1 downto 0);
 signal sPIXELS          : std_logic_vector(31 downto 0);
 
+signal s_height         : unsigned(31 downto 0);
+
 begin
+    
+    s_height <= unsigned(inHEIGHT) + 1;
 
     sPIXELS <= inPIXELS;
 
---Blok je spreman za primanje piksela sve dok ne dodje do rezolucije ekrana 1920x1080(predstavljeno matricom), 
---kada popunimo cijeli ekran pikselima blok nije spreman za sledeci frame dok se ne zavrsi obrada tekuceg.
-    outREADY <= '1' when unsigned(sCOLUMN) < 960 and unsigned(sROW) < 1080 else
-				'0';
+-- oznacava da je blok uvijek spreman da primi sledeci frame. Trebace uslov koji ovu vrijednost postavlja na '1' tek kada se zavrsi obrada 
+-- tekuceg frame-a da ne bi dosli u situaciju da dok obradjujemo jedan frame, drugi krene da dolazi.
+    outREADY <= '1';
 
 -- uslov za prelaz u novu kolonu, zavisi od signala sa AXI4Stream magistrale.    
     sNEW_COLUMN <= "11" when inLAST_LINE = '1' and inVALID_PIXELS = '1' else
@@ -96,7 +100,7 @@ begin
                                 if(inRST <= '0') then
                                     sROW <= (others => '0'); 
                                 else
-                                    if(sNEW_ROW = "11" or sROW = std_logic_vector(to_unsigned(1081,32))) then
+                                    if(sNEW_ROW = "11" or sROW = std_logic_vector(s_height)) then
                                         sROW <= std_logic_vector(to_unsigned(1,32));
                                     elsif(sNEW_ROW = "10") then
                                         sROW <= std_logic_vector(unsigned(sROW) + 1);

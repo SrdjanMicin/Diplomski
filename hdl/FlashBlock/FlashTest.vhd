@@ -35,6 +35,8 @@ entity FlashTest is
             inLAST_LINE             : in std_logic;                             -- kraj reda
             inVALID_PIXELS          : in std_logic;                             -- validni pikseli
             inSTART_TRANSMISSION    : in std_logic;                             -- pocetak novog frame-a(slike)
+            inWIDTH                 : in std_logic_vector(31 downto 0);
+            inHEIGHT                : in std_logic_vector(31 downto 0);         
             inX1_COORDINATE         : in std_logic_vector(31 downto 0);         -- donja granica prvog kvadrata po X-osi
             inX2_COORDINATE         : in std_logic_vector(31 downto 0);         -- gornja granica prvog kvadrata po X-osi
             inX3_COORDINATE         : in std_logic_vector(31 downto 0);         -- donja granica drugog kvadrata po X-osi
@@ -58,6 +60,7 @@ component PixelCounter is
             inLAST_LINE             : in  std_logic;
             inVALID_PIXELS          : in  std_logic;
             inSTART_TRANSMISSION    : in  std_logic;
+            inHEIGHT                : in  std_logic_vector(31 downto 0);
             outREADY                : out std_logic;
             outCOLUMN               : out std_logic_vector(31 downto 0);
             outROW                  : out std_logic_vector(31 downto 0);
@@ -105,7 +108,7 @@ signal sRESULT_2        : std_logic;
 begin
 
 --end of frame signal
-sEND_OF_FRAME <=    '1' when unsigned(sCOLUMN) = 960 and unsigned(sROW) = 1080 and inLAST_LINE = '1' else
+sEND_OF_FRAME <=    '1' when unsigned(sCOLUMN) = unsigned(inWIDTH) and unsigned(sROW) = unsigned(inHEIGHT) and inLAST_LINE = '1' else
                     '0'; 
 
 -- column and row counter
@@ -116,6 +119,7 @@ sEND_OF_FRAME <=    '1' when unsigned(sCOLUMN) = 960 and unsigned(sROW) = 1080 a
                                                 inLAST_LINE             => inLAST_LINE,
                                                 inVALID_PIXELS          => inVALID_PIXELS,
                                                 inSTART_TRANSMISSION    => inSTART_TRANSMISSION,
+                                                inHEIGHT                => inHEIGHT,
                                                 outREADY                => outREADY,
                                                 outROW                  => sROW,
                                                 outCOLUMN               => sCOLUMN,

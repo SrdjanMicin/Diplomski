@@ -41,6 +41,8 @@ component HbbTV_Test is
 				inLAST_LINE				: in  std_logic;
 				inVALID_PIXELS			: in  std_logic;
 				inSTART_TRANSMISSION	: in  std_logic;
+				inWIDTH                 : in  std_logic_vector(31 downto 0);
+				inHEIGHT                : in  std_logic_vector(31 downto 0);
 				inX1_COORDINATE			: in  std_logic_vector(31 downto 0);
 				inX2_COORDINATE			: in  std_logic_vector(31 downto 0);
 				inX3_COORDINATE			: in  std_logic_vector(31 downto 0);
@@ -61,15 +63,15 @@ end component HbbTV_Test;
 
 component VideoGen is
 	Generic	(
-				number_of_pictures	: integer;
-				source_file_path1	: string := "file.txt";
-				width	: integer := 1920;
-				height	: integer := 1080;
+				source_file_path	: string := "file.txt";
+				width	: integer := 1280;
+				height	: integer := 720;
 				delay	: integer := 12				
 			);
 	Port	(
 				iCLK				: in  std_logic;
 				inRST				: in  std_logic;
+				inREAD_PIC          : in  std_logic;
 				m_axis_video_tready	: in  std_logic;
 				m_axis_video_tdata	: out std_logic_vector(31 downto 0);
 				m_axis_video_tvalid	: out std_logic;
@@ -90,10 +92,9 @@ component AudioGen is
 end component AudioGen;
 
 -- signali za video signal
+signal pic_start      : std_logic := '0';
 
-constant picture : string := "D:\Diplomski\jpeg test pattern generator\BMPtoYCbCr\Paint_slike";
-
-signal clk				: std_logic;
+signal video_clk			: std_logic;
 signal reset			: std_logic := '0';
 signal pixels			: std_logic_vector(31 downto 0);
 signal video_last_line	: std_logic;
@@ -102,6 +103,8 @@ signal video_start		: std_logic;
 signal video_ready		: std_logic;
 signal column			: std_logic_vector(31 downto 0);
 signal row				: std_logic_vector(31 downto 0);
+signal width            : std_logic_vector(31 downto 0);
+signal height           : std_logic_vector(31 downto 0);
 signal x1				: std_logic_vector(31 downto 0);
 signal x2				: std_logic_vector(31 downto 0);
 signal x3				: std_logic_vector(31 downto 0);
@@ -113,6 +116,7 @@ signal pixels_out		: std_logic_vector(31 downto 0);
 
 -- signali za audio signal
 
+signal audio_clk        : std_logic;
 signal audio_ready		: std_logic;
 signal audio_valid		: std_logic;
 signal audio_last		: std_logic;
@@ -124,15 +128,15 @@ signal time_diff		: std_logic_vector(15 downto 0);
 begin
 
 	video_generator:	VideoGen generic map	(
-													number_of_pictures	=> 116,
-													source_file_path1	=> picture,
-													width	=> 1920,
-													height	=> 1080,
+													source_file_path	=> "D:\DiplomskiHbbTV\docs",
+													width	=> 1280,
+													height	=> 720,
 													delay	=> 12
 												)
 								port map	(
-												iCLK				=> clk,
+												iCLK				=> video_clk,
 												inRST				=> reset,
+												inREAD_PIC          => pic_start,
 												m_axis_video_tdata	=> pixels,
 												m_axis_video_tvalid	=> video_valid,
 												m_axis_video_tready	=> video_ready,
@@ -141,7 +145,7 @@ begin
 											);
 											
 	audio_generator:	AudioGen port map	(
-												iCLK 				=> clk,
+												iCLK 				=> audio_clk,
 												inRST				=> reset,
 												m_axis_data_tready	=> audio_ready,
 												m_axis_data_tvalid	=> audio_valid,
@@ -150,12 +154,14 @@ begin
 											);
 											
 UUT	:HbbTV_Test port map	(
-								iCLK 					=> clk,
+								iCLK 					=> video_clk,
 								inRST					=> reset,
 								inPIXELS				=> pixels,
 								inLAST_LINE				=> video_last_line,
 								inVALID_PIXELS			=> video_valid,
 								inSTART_TRANSMISSION	=> video_start,
+								inWIDTH                 => width,
+								inHEIGHT                => height,
 								inX1_COORDINATE			=> x1,
 								inX2_COORDINATE			=> x2,
 								inX3_COORDINATE			=> x3,
@@ -173,28 +179,38 @@ UUT	:HbbTV_Test port map	(
 							
 	video_ready <= '1';
 	audio_ready <= '1';
-	x1 <= std_logic_vector(to_unsigned(318,32));
-	x2 <= std_logic_vector(to_unsigned(640,32));
-	x3 <= std_logic_vector(to_unsigned(1279,32));
-	x4 <= std_logic_vector(to_unsigned(1600,32));
-	y1 <= std_logic_vector(to_unsigned(809,32));
-	y2 <= std_logic_vector(to_unsigned(1079,32));
-	video_border <= std_logic_vector(to_unsigned(5097600,32));
+	width  <= std_logic_vector(to_unsigned(1280/2,32));
+	height <= std_logic_vector(to_unsigned(720,32)); 
+	x1 <= std_logic_vector(to_unsigned(211,32));
+	x2 <= std_logic_vector(to_unsigned(427,32));
+	x3 <= std_logic_vector(to_unsigned(852,32));
+	x4 <= std_logic_vector(to_unsigned(1067,32));
+	y1 <= std_logic_vector(to_unsigned(539,32));
+	y2 <= std_logic_vector(to_unsigned(719,32));
+	video_border <= std_logic_vector(to_unsigned(1742923,32));
+	audio_border <= std_logic_vector(to_unsigned(8586,32));
 
 clk_process:	process
 				begin
-					clk <= '0';
+					video_clk <= '0';
+					audio_clk <= '0';
 					wait for 10ns;
-					clk <= '1';
+					video_clk <= '1';
+					audio_clk <= '1';
 					wait for 10ns;
 				end process clk_process;
-
-		rst:	process
-				begin
-					wait for 50ns;
-					reset <= '1';
-					wait;
-				end process rst;
+				
+	   start:  process
+	           begin
+	               reset <= '0';
+	               wait for 50ns;
+	               reset <= '1';
+	               pic_start <= '1';
+	               wait for 70ns;
+	               pic_start <= '0';
+	               wait;
+	           end process;
+	
 end Behavioral;
 
 -------------------------------------------------------------------------------------------------------------
